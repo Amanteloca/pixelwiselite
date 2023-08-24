@@ -5,8 +5,11 @@ from pixelwiselite_image_compression import compress_and_save_image
 app = Flask(__name__)
 
 UPLOAD_FOLDER = 'uploads'  # Replace with your desired upload folder
+COMPRESSED_FOLDER = 'compressed'  # Replace with your desired compressed images folder
+
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['COMPRESSED_FOLDER'] = COMPRESSED_FOLDER
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -32,9 +35,9 @@ def api_compress():
             filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(filename)
 
-            compressed_filename = compress_and_save_image(filename, app.config['UPLOAD_FOLDER'], 800, compression_quality=70)
+            compressed_filename = compress_and_save_image(filename, app.config['COMPRESSED_FOLDER'], 800, compression_quality=70)
             if compressed_filename:
-                return send_from_directory(app.config['UPLOAD_FOLDER'], compressed_filename, as_attachment=True)
+                return send_from_directory(app.config['COMPRESSED_FOLDER'], compressed_filename, as_attachment=True)
             else:
                 return jsonify({'error': 'Error occurred during compression'}), 500
     except Exception as e:
