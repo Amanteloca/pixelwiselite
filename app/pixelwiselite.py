@@ -1,7 +1,6 @@
-from flask import Flask, render_template, request, send_from_directory
+from flask import Flask, render_template, request, jsonify, send_from_directory
 import os
-from pixelwiselite_image_compression import compress_and_save_image  # Import the image compression function
-import logging
+from pixelwiselite_image_compression import compress_and_save_image
 
 app = Flask(__name__)
 
@@ -12,20 +11,22 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# Default route for the web interface
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/compress', methods=['POST'])
-def compress():
+# API endpoint to handle image compression via POST request
+@app.route('/api/compress', methods=['POST'])
+def api_compress():
     try:
         if 'image' not in request.files:
-            return 'No image part'
+            return jsonify({'error': 'No image part'}), 400
 
         file = request.files['image']
 
         if file.filename == '':
-            return 'No selected file'
+            return jsonify({'error': 'No selected file'}), 400
 
         if file and allowed_file(file.filename):
             filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
@@ -35,10 +36,9 @@ def compress():
             if compressed_filename:
                 return send_from_directory(app.config['UPLOAD_FOLDER'], compressed_filename, as_attachment=True)
             else:
-                return 'Error occurred during compression'
+                return jsonify({'error': 'Error occurred during compression'}), 500
     except Exception as e:
-        logging.error(f"Error during compression: {e}")
-        return 'An error occurred'
+        return jsonify({'error': 'An error occurred'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
