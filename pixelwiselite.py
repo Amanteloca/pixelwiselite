@@ -1,47 +1,37 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory
-import os
+from flask import Flask, render_template, request, jsonify
 from pixelwiselite_image_compression import compress_and_save_image
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = 'uploads'  # Replace with your desired upload folder
-COMPRESSED_FOLDER = 'compressed'  # Replace with your desired compressed images folder
-
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['COMPRESSED_FOLDER'] = COMPRESSED_FOLDER
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-# Default route for the web interface
+# Define the route to the landing page
 @app.route('/')
-def index():
-    return render_template('index.html')
+def landing():
+    return render_template('landing.html')
 
-# API endpoint to handle image compression via POST request
-@app.route('/api/compress', methods=['POST'])
-def api_compress():
+# Define the route for image compression page
+@app.route('/compress')
+def compression():
+    return render_template('compression.html')
+
+# Define the route to handle image compression
+@app.route('/compress_image', methods=['POST'])
+def compress_image():
     try:
-        if 'image' not in request.files:
-            return jsonify({'error': 'No image part'}), 400
+        # Get the uploaded image and compression quality from the form
+        uploaded_image = request.files['image']
+        compression_quality = request.form['quality']
 
-        file = request.files['image']
+        # Check if an image file was selected
+        if uploaded_image.filename != '':
+            # Compress and save the image using your compression function
+            compressed_image_path = compress_and_save_image(uploaded_image, compression_quality)
 
-        if file.filename == '':
-            return jsonify({'error': 'No selected file'}), 400
-
-        if file and allowed_file(file.filename):
-            filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-            file.save(filename)
-
-            compressed_filename = compress_and_save_image(filename, app.config['COMPRESSED_FOLDER'], 800, compression_quality=70)
-            if compressed_filename:
-                return send_from_directory(app.config['COMPRESSED_FOLDER'], compressed_filename, as_attachment=True)
-            else:
-                return jsonify({'error': 'Error occurred during compression'}), 500
+            # Return the path to the compressed image
+            return jsonify({'compressed_image_path': compressed_image_path})
+        else:
+            return jsonify({'error': 'No image selected'})
     except Exception as e:
-        return jsonify({'error': 'An error occurred'}), 500
+        return jsonify({'error': str(e)})
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000)
