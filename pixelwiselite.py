@@ -9,7 +9,7 @@ def landing():
     return render_template('landing.html')
 
 # Define the route for image compression page
-@app.route('/compress')
+@app.route('/compression')
 def compression():
     return render_template('compression.html')
 
