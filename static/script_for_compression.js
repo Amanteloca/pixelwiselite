@@ -1,21 +1,21 @@
 document.addEventListener('DOMContentLoaded', function () {
   const form = document.querySelector('#upload-form');
-  const compressButton = document.querySelector('#compress-button');
-  const loadingIndicator = document.querySelector('#loading-indicator');
   const compressedImage = document.querySelector('#compressed-image');
   const compressedImageContainer = document.querySelector('#compressed-image-container');
+  const uploadButton = document.querySelector('#upload-button');
+  const loadingIndicator = document.querySelector('#loading-indicator');
   const errorMessage = document.querySelector('#error-message');
 
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
-    errorMessage.classList.add('hidden'); // Hide any previous error messages
 
     const formData = new FormData(form);
-    
+
+    // Disable the upload button while processing
+    uploadButton.disabled = true;
+    loadingIndicator.style.display = 'block';
+
     try {
-      compressButton.disabled = true;
-      loadingIndicator.classList.remove('hidden');
-      
       const response = await fetch('/compress', {
         method: 'POST',
         body: formData,
@@ -27,20 +27,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Display the compressed image
         compressedImage.src = compressedImageURL;
-        compressedImageContainer.classList.remove('hidden');
+        compressedImageContainer.style.display = 'block'; // Show the image container
+        errorMessage.style.display = 'none'; // Hide error message if previously shown
       } else {
-        showError('Error while compressing the image');
+        errorMessage.textContent = 'Error while compressing the image';
+        errorMessage.style.display = 'block'; // Show error message
       }
     } catch (error) {
-      showError('An error occurred. Please try again later.');
+      errorMessage.textContent = 'An unexpected error occurred';
+      errorMessage.style.display = 'block'; // Show error message
     } finally {
-      compressButton.disabled = false;
-      loadingIndicator.classList.add('hidden');
+      // Re-enable the upload button and hide loading indicator
+      uploadButton.disabled = false;
+      loadingIndicator.style.display = 'none';
     }
   });
-
-  function showError(message) {
-    errorMessage.textContent = message;
-    errorMessage.classList.remove('hidden');
-  }
 });
