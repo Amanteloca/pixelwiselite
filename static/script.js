@@ -68,3 +68,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Custom JavaScript code can be added here to further enhance your landing page.
 });
+
+
+ document.addEventListener('DOMContentLoaded', function () {
+  // Get a reference to the "Go to App" button by its id
+  const goToAppButton = document.getElementById('go-to-app-button');
+
+  // Add a click event listener to the button
+  goToAppButton.addEventListener('click', function (e) {
+    e.preventDefault(); // Prevent the default link behavior
+
+    // Navigate to the "compression.html" page
+    window.location.href = '/compression.html';
+  });
+});
