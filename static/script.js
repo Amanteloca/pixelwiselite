@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
   goToAppButton.addEventListener('click', function (e) {
     e.preventDefault(); // Prevent the default link behavior
 
-    // Navigate to the "compression.html" page
-    window.location.href = '/compression.html';
+    // Navigate to the "/compression" route
+    window.location.href = '/compression';
   });
 });
