@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
     loadingIndicator.style.display = 'block';
 
     try {
-      const response = await fetch('/compress', {
+      const response = await fetch('/compression', {
         method: 'POST',
         body: formData,
       });
