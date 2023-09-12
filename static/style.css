@@ -31,7 +31,7 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 20px 0;
-  background-color: #0f0f0f; /* Dark background color */
+  background-color: #292929; /* Header background color */
   color: #ffffff; /* Light text color */
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
