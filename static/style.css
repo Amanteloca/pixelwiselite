@@ -1,8 +1,14 @@
+/* Reset some default styles */
+body, h1, h2, p, ul, li {
+  margin: 0;
+  padding: 0;
+}
+
 /* Apply styles to the body */
 body {
-  font-family: 'Montserrat', sans-serif;
-  background-color: #f0f0f0; /* Light gray background */
-  color: #333;
+  font-family: 'Inter', sans-serif; /* Modern and clean font */
+  background-color: #0f0f0f; /* Dark background color */
+  color: #ffffff; /* Light text color */
   line-height: 1.6;
 }
 
@@ -11,9 +17,9 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   padding: 30px;
-  background-color: #fff;
+  background-color: #1a1a1a; /* Darker background */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
+  border-radius: 10px;
   text-align: center;
   margin-top: 50px;
   position: relative;
@@ -25,13 +31,17 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 20px 0;
-  background-color: #333;
-  color: #fff;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
+  background-color: #0f0f0f; /* Dark background color */
+  color: #ffffff; /* Light text color */
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
-/* Style navigation menu links */
+header img {
+  max-width: 100%;
+}
+
+/* Style the navigation menu */
 nav ul {
   list-style: none;
   display: flex;
@@ -47,7 +57,7 @@ nav li {
 h1 {
   font-size: 36px;
   margin-bottom: 20px;
-  color: #3498db; /* Blue heading color */
+  color: #bb86fc; /* Accent color */
 }
 
 /* Style the form section */
@@ -55,15 +65,13 @@ form {
   text-align: left;
 }
 
-/* Style the "Select an image to compress" label */
 label {
   display: block;
   margin-bottom: 10px;
   font-weight: bold;
-  color: #333; /* Dark text color */
+  color: #ffffff; /* Light text color */
 }
 
-/* Style input and select elements */
 input[type="file"], select {
   width: 100%;
   padding: 10px;
@@ -72,19 +80,19 @@ input[type="file"], select {
   border-radius: 5px;
 }
 
-/* Style the "Compress Image" button */
 button {
-  background-color: #27ae60; /* Green button background */
+  background-color: #6200ea; /* Web3-inspired color */
   color: white;
   padding: 15px 25px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 18px;
+  transition: background-color 0.2s;
 }
 
 button:hover {
-  background-color: #219952; /* Darker green on hover */
+  background-color: #512da8; /* Darker shade on hover */
 }
 
 /* Style the compressed image section */
@@ -93,17 +101,16 @@ button:hover {
   margin-top: 30px;
 }
 
-/* Style the compressed image */
 #compressed-image {
   max-width: 100%;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
 
-/* Style CTA buttons and links */
+/* Additional styles for buttons and links */
 .cta-button {
-  background-color: #e74c3c; /* Red CTA button background */
-  color: white;
+  background-color: #bb86fc; /* Accent color */
+  color: #0f0f0f; /* Dark background */
   text-decoration: none;
   padding: 12px 24px;
   border-radius: 5px;
@@ -113,11 +120,11 @@ button:hover {
 }
 
 .cta-button:hover {
-  background-color: #c0392b; /* Darker red on hover */
+  background-color: #3700b3; /* Darker accent color on hover */
 }
 
 a {
-  color: #3498db;
+  color: #bb86fc; /* Accent color */
   text-decoration: none;
 }
 
