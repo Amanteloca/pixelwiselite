@@ -1,13 +1,7 @@
-/* Reset some default styles */
-body, h1, h2, p, ul, li {
-  margin: 0;
-  padding: 0;
-}
-
 /* Apply styles to the body */
 body {
   font-family: 'Montserrat', sans-serif;
-  background-color: #f7f7f7;
+  background-color: #f0f0f0; /* Light gray background */
   color: #333;
   line-height: 1.6;
 }
@@ -37,11 +31,7 @@ header {
   border-top-right-radius: 5px;
 }
 
-header img {
-  max-width: 100%;
-}
-
-/* Style the navigation menu */
+/* Style navigation menu links */
 nav ul {
   list-style: none;
   display: flex;
@@ -57,6 +47,7 @@ nav li {
 h1 {
   font-size: 36px;
   margin-bottom: 20px;
+  color: #3498db; /* Blue heading color */
 }
 
 /* Style the form section */
@@ -64,12 +55,15 @@ form {
   text-align: left;
 }
 
+/* Style the "Select an image to compress" label */
 label {
   display: block;
   margin-bottom: 10px;
   font-weight: bold;
+  color: #333; /* Dark text color */
 }
 
+/* Style input and select elements */
 input[type="file"], select {
   width: 100%;
   padding: 10px;
@@ -78,8 +72,9 @@ input[type="file"], select {
   border-radius: 5px;
 }
 
+/* Style the "Compress Image" button */
 button {
-  background-color: #3498db;
+  background-color: #27ae60; /* Green button background */
   color: white;
   padding: 15px 25px;
   border: none;
@@ -89,7 +84,7 @@ button {
 }
 
 button:hover {
-  background-color: #2980b9;
+  background-color: #219952; /* Darker green on hover */
 }
 
 /* Style the compressed image section */
@@ -98,15 +93,16 @@ button:hover {
   margin-top: 30px;
 }
 
+/* Style the compressed image */
 #compressed-image {
   max-width: 100%;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
 
-/* Additional styles for buttons and links */
+/* Style CTA buttons and links */
 .cta-button {
-  background-color: #27ae60;
+  background-color: #e74c3c; /* Red CTA button background */
   color: white;
   text-decoration: none;
   padding: 12px 24px;
@@ -117,7 +113,7 @@ button:hover {
 }
 
 .cta-button:hover {
-  background-color: #219952;
+  background-color: #c0392b; /* Darker red on hover */
 }
 
 a {
@@ -127,4 +123,4 @@ a {
 
 a:hover {
   text-decoration: underline;
-  }
+}
