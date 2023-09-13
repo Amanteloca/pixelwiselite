@@ -1,36 +1,94 @@
-from PIL import Image, ImageFilter
+#! /usr/bin/env python3
+
 import os
-import logging
+import sys
 
-def compress_and_save_image(input_path, output_folder, max_width, compression_quality=85):
+from PIL import Image
+import numpy as np
+
+
+def load_image(path):
+    """ Load image from path. Return a numpy array """
+    image = Image.open(path)
+    return np.asarray(image) / 255
+
+
+def initialize_K_centroids(X, K):
+    """ Choose K points from X at random """
+    m = len(X)
+    return X[np.random.choice(m, K, replace=False), :]
+
+
+def find_closest_centroids(X, centroids):
+    m = len(X)
+    c = np.zeros(m)
+    
+    for i in range(m):
+        # Find distances
+        distances = np.linalg.norm(X[i] - centroids, axis=1)
+
+        # Assign closest cluster to c[i]
+        c[i] = np.argmin(distances)
+
+    return c
+
+
+def compute_means(X, idx, K):
+    _, n = X.shape
+    centroids = np.zeros((K, n))
+    for k in range(K):
+        examples = X[np.where(idx == k)]
+        mean = [np.mean(column) for column in examples.T]
+        centroids[k] = mean
+    return centroids
+
+
+def find_k_means(X, K, max_iters=10):
+    centroids = initialize_K_centroids(X, K)
+    previous_centroids = centroids
+    for _ in range(max_iters):
+        idx = find_closest_centroids(X, centroids)
+        centroids = compute_means(X, idx, K)
+        if (previous_centroids==centroids).all():
+            # The centroids aren't moving anymore.
+            return centroids
+        else:
+            previous_centroids = centroids
+
+    return centroids, idx
+
+
+def main():
     try:
-        # Open the image
-        with Image.open(input_path) as image:
-            # Apply image enhancements (e.g., sharpening)
-            enhanced_image = apply_image_enhancements(image)
+        image_path = sys.argv[1]
+        assert os.path.isfile(image_path)
+    except (IndexError, AssertionError):
+        print('Please specify an image')
 
-            # Calculate the new height to maintain aspect ratio
-            width, height = enhanced_image.size
-            new_height = int(max_width * height / width)
+    # Load the image
+    image = load_image(image_path)
+    w, h, d = image.shape
+    print('Image found with width: {}, height: {}, depth: {}'.format(w, h, d))
 
-            # Resize the image using Lanczos resampling for better quality
-            resized_image = enhanced_image.resize((max_width, new_height), Image.LANCZOS)
+    # Get the feature matrix X
+    X = image.reshape((w * h, d))
+    K = 40 # the number of colors in the image
 
-            # Create the output path for the compressed image
-            compressed_filename = f"compressed_{os.path.basename(input_path)}"
-            compressed_path = os.path.join(output_folder, compressed_filename)
+    # Get colors
+    print('Running K-means')
+    colors, _ = find_k_means(X, K, max_iters=20)
 
-            # Save the compressed image in WebP format for efficient compression
-            resized_image.save(compressed_path, "WebP", quality=compression_quality)
+    # Indexes for color for each pixel
+    idx = find_closest_centroids(X, colors)
 
-            return compressed_filename  # Return the filename of the compressed image
-    except FileNotFoundError:
-        logging.error("Input image file not found.")
-    except Exception as e:
-        logging.error(f"Error during compression: {e}")
-    return None
+    # Reconstruct the image
+    idx = np.array(idx, dtype=np.uint8)
+    X_reconstructed = np.array(colors[idx, :] * 255, dtype=np.uint8).reshape((w, h, d))
+    compressed_image = Image.fromarray(X_reconstructed)
 
-def apply_image_enhancements(image):
-    # Apply advanced image enhancements (e.g., sharpening) using PIL's filters
-    enhanced_image = image.filter(ImageFilter.SHARPEN)
-    return enhanced_image
+    # Save reconstructed image to disk
+    compressed_image.save('out.png')
+
+
+if __name__ == '__main__':
+    main()
