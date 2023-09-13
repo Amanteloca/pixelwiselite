@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#!/usr/bin/env python3
 
 import os
 import sys
@@ -10,18 +10,18 @@ import numpy as np
 def load_image(path):
     """ Load image from path. Return a numpy array """
     image = Image.open(path)
-    return np.asarray(image) / 255
+    return np.asarray(image) / 255.0  # Ensure values are between 0 and 1
 
 
 def initialize_K_centroids(X, K):
     """ Choose K points from X at random """
-    m = len(X)
+    m, n = X.shape  # Get the shape of X
     return X[np.random.choice(m, K, replace=False), :]
 
 
 def find_closest_centroids(X, centroids):
-    m = len(X)
-    c = np.zeros(m)
+    m, _ = X.shape
+    c = np.zeros(m, dtype=int)  # Initialize with integer zeros
     
     for i in range(m):
         # Find distances
@@ -38,7 +38,7 @@ def compute_means(X, idx, K):
     centroids = np.zeros((K, n))
     for k in range(K):
         examples = X[np.where(idx == k)]
-        mean = [np.mean(column) for column in examples.T]
+        mean = np.mean(examples, axis=0)  # Compute mean along each column
         centroids[k] = mean
     return centroids
 
@@ -49,7 +49,7 @@ def find_k_means(X, K, max_iters=10):
     for _ in range(max_iters):
         idx = find_closest_centroids(X, centroids)
         centroids = compute_means(X, idx, K)
-        if (previous_centroids==centroids).all():
+        if np.array_equal(previous_centroids, centroids):  # Use np.array_equal to compare arrays
             # The centroids aren't moving anymore.
             return centroids
         else:
@@ -64,6 +64,7 @@ def main():
         assert os.path.isfile(image_path)
     except (IndexError, AssertionError):
         print('Please specify an image')
+        return  # Exit if an image is not specified
 
     # Load the image
     image = load_image(image_path)
@@ -72,7 +73,7 @@ def main():
 
     # Get the feature matrix X
     X = image.reshape((w * h, d))
-    K = 40 # the number of colors in the image
+    K = 40  # the number of colors in the image
 
     # Get colors
     print('Running K-means')
