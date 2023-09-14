@@ -23,7 +23,7 @@ def compress_and_save_image(input_path, output_folder, max_width, compression_qu
             # Save the compressed image in WebP format for efficient compression
             resized_image.save(compressed_path, "WebP", quality=compression_quality)
 
-            return compressed_filename  # Return the filename of the compressed image
+            return compressed_path  # Return the path of the compressed image
     except FileNotFoundError:
         logging.error("Input image file not found.")
     except Exception as e:
