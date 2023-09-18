@@ -1,8 +1,3 @@
-from flask import Flask, render_template, request, jsonify
-from pixelwiselite_image_compression import compress_and_save_image
-
-app = Flask(__name__)
-
 # Define the route to the landing page
 @app.route('/')
 def landing():
@@ -21,13 +16,17 @@ def compress_image():
         uploaded_image = request.files['image']
         compression_quality = request.form['quality']
 
+        # Set default input and output paths
+        input_image_path = 'default_input_image.jpg'
+        output_image_path = 'default_output_image.jpg'
+
         # Check if an image file was selected
         if uploaded_image.filename != '':
-            # Compress and save the image using your compression function
-            compressed_image_path = compress_and_save_image(uploaded_image, compression_quality)
+            # Compress and save the image using the specified paths
+            compress_and_save_image(input_image_path, output_image_path)
 
             # Return the path to the compressed image
-            return jsonify({'compressed_image_path': compressed_image_path})
+            return jsonify({'compressed_image_path': output_image_path})
         else:
             return jsonify({'error': 'No image selected'})
     except Exception as e:
