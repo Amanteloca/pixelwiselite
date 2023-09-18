@@ -1,82 +1,36 @@
-
-
+from flask import Flask, render_template, request, jsonify
+from PIL import Image
+import numpy as np
 import os
 import sys
 
-from PIL import Image
-import numpy as np
+app = Flask(__name__)
 
-
+# Function to load an image from a path
 def load_image(path):
-    """ Load image from path. Return a numpy array """
     image = Image.open(path)
     return np.asarray(image) / 255
 
-
-def initialize_K_centroids(X, K):
-    """ Choose K points from X at random """
-    m = len(X)
-    return X[np.random.choice(m, K, replace=False), :]
-
-
-def find_closest_centroids(X, centroids):
-    m = len(X)
-    c = np.zeros(m)
-    
-    for i in range(m):
-        # Find distances
-        distances = np.linalg.norm(X[i] - centroids, axis=1)
-
-        # Assign closest cluster to c[i]
-        c[i] = np.argmin(distances)
-
-    return c
-
-
-def compute_means(X, idx, K):
-    _, n = X.shape
-    centroids = np.zeros((K, n))
-    for k in range(K):
-        examples = X[np.where(idx == k)]
-        mean = [np.mean(column) for column in examples.T]
-        centroids[k] = mean
-    return centroids
-
-
+# Function to perform K-means clustering for image compression
 def find_k_means(X, K, max_iters=10):
-    centroids = initialize_K_centroids(X, K)
-    previous_centroids = centroids
-    for _ in range(max_iters):
-        idx = find_closest_centroids(X, centroids)
-        centroids = compute_means(X, idx, K)
-        if (previous_centroids==centroids).all():
-            # The centroids aren't moving anymore.
-            return centroids
-        else:
-            previous_centroids = centroids
+    # (Include your K-means code here)
 
-    return centroids, idx
-
-
-def main():
+# Function to compress and save an image
+def compress_and_save_image(input_image_path, output_image_path, K=40, max_iters=20):
     try:
-        image_path = sys.argv[1]
-        assert os.path.isfile(image_path)
-    except (IndexError, AssertionError):
-        print('Please specify an image')
+        assert os.path.isfile(input_image_path)
+    except AssertionError:
+        raise Exception('Image file not found.')
 
     # Load the image
-    image = load_image(image_path)
+    image = load_image(input_image_path)
     w, h, d = image.shape
-    print('Image found with width: {}, height: {}, depth: {}'.format(w, h, d))
 
     # Get the feature matrix X
     X = image.reshape((w * h, d))
-    K = 40 # the number of colors in the image
 
-    # Get colors
-    print('Running K-means')
-    colors, _ = find_k_means(X, K, max_iters=20)
+    # Get colors using K-means clustering
+    colors, _ = find_k_means(X, K, max_iters=max_iters)
 
     # Indexes for color for each pixel
     idx = find_closest_centroids(X, colors)
@@ -86,9 +40,42 @@ def main():
     X_reconstructed = np.array(colors[idx, :] * 255, dtype=np.uint8).reshape((w, h, d))
     compressed_image = Image.fromarray(X_reconstructed)
 
-    # Save reconstructed image to disk
-    compressed_image.save('out.png')
+    # Save reconstructed image to the specified path
+    compressed_image.save(output_image_path)
 
+# Define the route to the landing page
+@app.route('/')
+def landing():
+    return render_template('landing.html')
+
+# Define the route for image compression page
+@app.route('/compression')
+def compression():
+    return render_template('compression.html')
+
+# Define the route to handle image compression
+@app.route('/compress_image', methods=['POST'])
+def compress_image():
+    try:
+        # Get the uploaded image and compression quality from the form
+        uploaded_image = request.files['image']
+        compression_quality = request.form['quality']
+
+        # Set default input and output paths
+        input_image_path = 'default_input_image.jpg'
+        output_image_path = 'default_output_image.jpg'
+
+        # Check if an image file was selected
+        if uploaded_image.filename != '':
+            # Compress and save the image using the specified paths
+            compress_and_save_image(input_image_path, output_image_path)
+
+            # Return the path to the compressed image
+            return jsonify({'compressed_image_path': output_image_path})
+        else:
+            return jsonify({'error': 'No image selected'})
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
 if __name__ == '__main__':
-    main()
+    app.run(host='127.0.0.1', port=5000)
