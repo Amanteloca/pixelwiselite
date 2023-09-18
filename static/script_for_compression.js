@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
     loadingIndicator.style.display = 'block';
 
     try {
-      const response = await fetch('/compress_image', {
+      const response = await fetch('/compress_image', {  // This URL is correct for a local Flask app
         method: 'POST',
         body: formData,
       });
